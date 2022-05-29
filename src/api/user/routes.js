@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import * as userController from './controller';
-import { findUser, userValidator } from '../../validators/userValidator';
+import { userValidator } from '../../validators/userValidator';
 
 const router = Router();
 
@@ -11,23 +11,18 @@ const router = Router();
 router.get('/cities', userController.getCities);
 
 /**
- * GET /api/users/:id.
+ * GET /api/users/login.
  */
-router.get('/:id', userController.fetchById);
+router.get('/login', userController.login);
 
 /**
- * POST /api/users.
+ * GET /api/profile.
  */
-router.post('/', userValidator, userController.create);
+router.get('/profile', userValidator, userController.getProfileInfo);
 
 /**
- * PUT /api/users/:id.
+ * POST /api/profile.
  */
-router.put('/:id', findUser, userValidator, userController.update);
-
-/**
- * DELETE /api/users/:id.
- */
-router.delete('/:id', findUser, userController.deleteUser);
+router.get('/profile', userValidator, userController.setProfileInfo);
 
 export default router;
