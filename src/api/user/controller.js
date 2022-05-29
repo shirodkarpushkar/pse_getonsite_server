@@ -1,6 +1,6 @@
 import HttpStatus from 'http-status-codes';
 
-import * as userService from '../services/userService';
+import * as userService from './service';
 
 /**
  * Get all cities.

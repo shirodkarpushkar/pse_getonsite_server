@@ -1,6 +1,5 @@
 import Boom from '@hapi/boom';
-import { mysqlQuery } from '../db';
-
+import { mysqlQuery } from '../../db';
 /**
  * Get all cities.
  *

@@ -1,7 +1,7 @@
 import Joi from '@hapi/joi';
 
 import validate from '../utils/validate';
-import * as userService from '../services/userService';
+import * as userService from '../api/user/service';
 
 // Validation schema
 const schema = Joi.object({
