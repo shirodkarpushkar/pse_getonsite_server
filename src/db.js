@@ -1,12 +1,10 @@
-import knexJs from 'knex';
-import bookshelf from 'bookshelf';
-
-import knexConfig from './knexfile';
+import util from 'util';
+import mysql from 'mysql';
+import config from './knexfile';
 
 /**
  * Database connection.
  */
-const knex = knexJs(knexConfig);
-const db = bookshelf(knex);
+const pool = mysql.createPool(config.connection);
 
-export default db;
+export const mysqlQuery = util.promisify(pool.query).bind(pool);
