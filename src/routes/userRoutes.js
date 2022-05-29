@@ -6,9 +6,9 @@ import { findUser, userValidator } from '../validators/userValidator';
 const router = Router();
 
 /**
- * GET /api/users.
+ * GET /api/cities.
  */
-router.get('/', userController.fetchAll);
+router.get('/cities', userController.getCities);
 
 /**
  * GET /api/users/:id.

@@ -9,14 +9,14 @@ import userRoutes from './routes/userRoutes';
 const router = Router();
 
 /**
- * GET /api/swagger.json
+ * GET /api/swagger.json.
  */
 router.get('/swagger.json', (req, res) => {
   res.json(swaggerSpec);
 });
 
 /**
- * GET /api
+ * GET /api.
  */
 router.get('/', (req, res) => {
   res.json({

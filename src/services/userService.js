@@ -1,58 +1,17 @@
 import Boom from '@hapi/boom';
-
-import User from '../models/user';
+import { mysqlQuery } from '../db';
 
 /**
- * Get all users.
+ * Get all cities.
  *
  * @returns {Promise}
  */
-export function getAllUsers() {
-  return User.fetchAll();
-}
+export const getCities = async () => {
+  try {
+    const result = await mysqlQuery(`SELECT * FROM cities order by name asc`);
 
-/**
- * Get a user.
- *
- * @param   {Number|String}  id
- * @returns {Promise}
- */
-export function getUser(id) {
-  return new User({ id })
-    .fetch()
-    .then(user => user)
-    .catch(User.NotFoundError, () => {
-      throw Boom.notFound('User not found');
-    });
-}
-
-/**
- * Create new user.
- *
- * @param   {Object}  user
- * @returns {Promise}
- */
-export function createUser(user) {
-  return new User({ name: user.name }).save();
-}
-
-/**
- * Update a user.
- *
- * @param   {Number|String}  id
- * @param   {Object}         user
- * @returns {Promise}
- */
-export function updateUser(id, user) {
-  return new User({ id }).save({ name: user.name });
-}
-
-/**
- * Delete a user.
- *
- * @param   {Number|String}  id
- * @returns {Promise}
- */
-export function deleteUser(id) {
-  return new User({ id }).fetch().then(user => user.destroy());
-}
+    return result;
+  } catch (error) {
+    throw Boom.badRequest(error);
+  }
+};

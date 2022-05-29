@@ -3,18 +3,21 @@ import HttpStatus from 'http-status-codes';
 import * as userService from '../services/userService';
 
 /**
- * Get all users.
+ * Get all cities.
  *
  * @param {Object} req
  * @param {Object} res
  * @param {Function} next
  */
-export function fetchAll(req, res, next) {
-  userService
-    .getAllUsers()
-    .then(data => res.json({ data }))
-    .catch(err => next(err));
-}
+export const getCities = async (req, res, next) => {
+  try {
+    const data = await userService.getCities();
+
+    return res.status(HttpStatus.OK).json({ status: HttpStatus.OK, message: 'success', data });
+  } catch (error) {
+    next(error);
+  }
+};
 
 /**
  * Get a user by its id.
@@ -26,8 +29,8 @@ export function fetchAll(req, res, next) {
 export function fetchById(req, res, next) {
   userService
     .getUser(req.params.id)
-    .then(data => res.json({ data }))
-    .catch(err => next(err));
+    .then((data) => res.json({ data }))
+    .catch((err) => next(err));
 }
 
 /**
@@ -40,8 +43,8 @@ export function fetchById(req, res, next) {
 export function create(req, res, next) {
   userService
     .createUser(req.body)
-    .then(data => res.status(HttpStatus.CREATED).json({ data }))
-    .catch(err => next(err));
+    .then((data) => res.status(HttpStatus.CREATED).json({ data }))
+    .catch((err) => next(err));
 }
 
 /**
@@ -54,8 +57,8 @@ export function create(req, res, next) {
 export function update(req, res, next) {
   userService
     .updateUser(req.params.id, req.body)
-    .then(data => res.json({ data }))
-    .catch(err => next(err));
+    .then((data) => res.json({ data }))
+    .catch((err) => next(err));
 }
 
 /**
@@ -68,6 +71,6 @@ export function update(req, res, next) {
 export function deleteUser(req, res, next) {
   userService
     .deleteUser(req.params.id)
-    .then(data => res.status(HttpStatus.NO_CONTENT).json({ data }))
-    .catch(err => next(err));
+    .then((data) => res.status(HttpStatus.NO_CONTENT).json({ data }))
+    .catch((err) => next(err));
 }
