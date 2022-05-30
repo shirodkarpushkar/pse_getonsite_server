@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import * as userController from './controller';
-import { userValidator } from '../../validators/userValidator';
+import * as auth from '../../validators/auth';
 
 const router = Router();
 
@@ -18,11 +18,21 @@ router.get('/login', userController.login);
 /**
  * GET /api/profile.
  */
-router.get('/profile', userValidator, userController.getProfileInfo);
+router.get('/profile', auth.validateToken, userController.getProfileInfo);
 
 /**
  * POST /api/profile.
  */
-router.get('/profile', userValidator, userController.setProfileInfo);
+router.get('/profile', auth.validateToken, userController.setProfileInfo);
+
+/**
+ * GET /api/transaction_details.
+ */
+router.get('/transaction_details', auth.validateToken, userController.getTransactionDetails);
+
+/**
+ * GET /api/lat_long_address.
+ */
+router.get('/lat_long_address', auth.validateToken, userController.getAddressFromLatLng);
 
 export default router;

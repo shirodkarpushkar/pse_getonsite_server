@@ -1,6 +1,10 @@
 import Boom from '@hapi/boom';
+import axios from 'axios';
+import NodeGeocoder from 'node-geocoder';
 import { mysqlQuery } from '../../db';
 import { tokenEncrypt } from '../../utils';
+
+const config = process.env;
 
 export const login = async (info) => {
   try {
@@ -77,6 +81,84 @@ export const setProfileInfo = async (userId, info) => {
     return result;
   } catch (e) {
     await mysqlQuery('ROLLBACK');
+    throw Boom.badRequest(e);
+  }
+};
+
+export const getTransactionDetails = async (info) => {
+  try {
+    if (info.readType === 'Booking') {
+      try {
+        const blockChainRes = await axios.get(`${config.BLOCKCHAIN_URL}/getTxCB?TxID=${info.transactionHash}`);
+
+        if (blockChainRes.data.StatusCode === 200) {
+          const consumerIdQ = await mysqlQuery(`select consumerNo, machineId from booking where Id = ?`, [
+            blockChainRes.data.Receipt.value.booking_id
+          ]);
+          const ownerIdQ = await mysqlQuery(`select ownerId from equipments where Id = ?`, [consumerIdQ[0].machineId]);
+
+          blockChainRes.data.Receipt.value.consumer_id = consumerIdQ[0].consumerNo;
+          blockChainRes.data.Receipt.value.owner_id = ownerIdQ[0].ownerId;
+
+          return blockChainRes.data.Receipt;
+        } else {
+          throw Boom.badRequest('Invalid transaction hash');
+        }
+      } catch (error) {
+        throw Boom.badRequest(error);
+      }
+    }
+
+    if (info.readType === 'Invoice') {
+      try {
+        const blockChainRes = await axios.get(`${config.BLOCKCHAIN_URL}/getTxCI?TxID=${info.transactionHash}`);
+
+        if (blockChainRes.data.StatusCode === 200) {
+          const consumerIdQ = await mysqlQuery(`select consumerNo, machineId from booking where Id = ?`, [
+            blockChainRes.data.Receipt.value.booking_id
+          ]);
+          const ownerIdQ = await mysqlQuery(`select ownerId from equipments where Id = ?`, [consumerIdQ[0].machineId]);
+
+          blockChainRes.data.Receipt.value.consumer_id = consumerIdQ[0].consumerNo;
+          blockChainRes.data.Receipt.value.owner_id = ownerIdQ[0].ownerId;
+
+          return blockChainRes.data.Receipt;
+        } else {
+          throw Boom.badRequest('Invalid transaction hash');
+        }
+      } catch (error) {
+        throw Boom.badRequest(error);
+      }
+    }
+  } catch (e) {
+    throw Boom.badRequest(e);
+  }
+};
+
+export const getAddressFromLatLng = async (info) => {
+  try {
+    const geocoder = NodeGeocoder({
+      provider: 'google',
+      apiKey: config.googleMatrixAPIKey
+    });
+    let address = null;
+
+    const res = await geocoder.reverse({ lat: info.lat, lon: info.lng });
+
+    address = res[0].formattedAddress;
+    const countryFind = address.split(' ');
+    const country = countryFind[countryFind.length - 1];
+
+    if (address !== null) {
+      if (country === 'Denmark' && countryFind.length > 1) {
+        return address;
+      } else {
+        throw Boom.badRequest('Invalid address');
+      }
+    } else {
+      throw Boom.badRequest('Invalid address');
+    }
+  } catch (e) {
     throw Boom.badRequest(e);
   }
 };

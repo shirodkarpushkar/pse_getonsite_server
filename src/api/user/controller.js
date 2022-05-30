@@ -60,7 +60,7 @@ export const getProfileInfo = async (req, res, next) => {
 export const setProfileInfo = async (req, res, next) => {
   try {
     const userId = res.locals.tokenInfo.Id;
-    const data = await userService.setProfileInfo(userId,req.body);
+    const data = await userService.setProfileInfo(userId, req.body);
 
     return res.status(HttpStatus.OK).json({ status: HttpStatus.OK, message: 'success', data });
   } catch (error) {
@@ -68,3 +68,35 @@ export const setProfileInfo = async (req, res, next) => {
   }
 };
 
+/**
+ * GetTransactionDetails.
+ *
+ * @param {Object} req
+ * @param {Object} res
+ * @param {Function} next
+ */
+export const getTransactionDetails = async (req, res, next) => {
+  try {
+    const data = await userService.getTransactionDetails(req.body);
+
+    return res.status(HttpStatus.OK).json({ status: HttpStatus.OK, message: 'success', data });
+  } catch (error) {
+    next(error);
+  }
+};
+/**
+ * GetAddressFromLatLng.
+ *
+ * @param {Object} req
+ * @param {Object} res
+ * @param {Function} next
+ */
+export const getAddressFromLatLng = async (req, res, next) => {
+  try {
+    const data = await userService.getAddressFromLatLng(req.body);
+
+    return res.status(HttpStatus.OK).json({ status: HttpStatus.OK, message: 'success', data });
+  } catch (error) {
+    next(error);
+  }
+}

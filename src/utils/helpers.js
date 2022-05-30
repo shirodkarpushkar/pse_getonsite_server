@@ -1,4 +1,6 @@
 import jwt from 'jsonwebtoken';
+import CryptoJS from 'crypto-js';
+
 const config = process.env;
 
 export const tokenEncrypt = async (data) => {
@@ -47,5 +49,21 @@ export const tokenDecrypt = async (data) => {
     return decode;
   } catch (error) {
     return error;
+  }
+};
+
+export const decryptData = (data) => {
+  const decrypted = CryptoJS.AES.decrypt(data, config.cryptokey);
+
+  if (decrypted) {
+    const userinfo = JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
+
+    return userinfo;
+  } else {
+    return {
+      userinfo: {
+        error: 'Please send proper token'
+      }
+    };
   }
 };
