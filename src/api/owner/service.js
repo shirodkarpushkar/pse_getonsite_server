@@ -305,7 +305,7 @@ export const machineList = async (info, ownerId) => {
   }
 };
 
-export const getBookings = async (ownerId, info) => {
+export const getBookings = async (info, ownerId) => {
   try {
     const totalCountQ = await mysqlQuery(
       `SELECT BK.Id, BK.startDate, BK.endDate, EQ.serialNumber, BK.equipmentType, BK.transactionHash, BK.invoiceAmount 
@@ -382,3 +382,4 @@ export const getInvoice = async (ownerId, info) => {
     throw Boom.badRequest(e);
   }
 };
+
