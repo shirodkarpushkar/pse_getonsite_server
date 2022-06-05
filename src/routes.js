@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import swaggerSpec from './utils/swagger';
-import userRoutes from './api/user/routes';
+import generalRoutes from './api/general/routes';
 import consumerRoutes from './api/consumer/routes';
 import ownerRoutes from './api/owner/routes';
 
@@ -27,7 +27,7 @@ router.get('/', (req, res) => {
   });
 });
 
-router.use('/', userRoutes);
+router.use('/', generalRoutes);
 router.use('/consumer', consumerRoutes);
 router.use('/owner', ownerRoutes);
 
