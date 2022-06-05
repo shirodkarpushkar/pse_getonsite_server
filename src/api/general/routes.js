@@ -31,8 +31,8 @@ router.post('/profile', auth.validateToken, controller.setProfileInfo);
 router.get('/transaction_details', auth.validateToken, controller.getTransactionDetails);
 
 /**
- * GET /api/lat_long_address.
+ * POST /api/lat_long_address.
  */
-router.get('/lat_long_address', auth.validateToken, controller.getAddressFromLatLng);
+router.post('/lat_long_address', auth.validateToken, controller.getAddressFromLatLng);
 
 export default router;

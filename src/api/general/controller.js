@@ -1,6 +1,6 @@
 import HttpStatus from 'http-status-codes';
 
-import * as userService from './service';
+import * as service from './service';
 
 /**
  * Get all cities.
@@ -11,7 +11,7 @@ import * as userService from './service';
  */
 export const getCities = async (req, res, next) => {
   try {
-    const data = await userService.getCities();
+    const data = await service.getCities();
 
     return res.status(HttpStatus.OK).json({ status: HttpStatus.OK, message: 'success', data });
   } catch (error) {
@@ -27,7 +27,7 @@ export const getCities = async (req, res, next) => {
  */
 export const login = async (req, res, next) => {
   try {
-    const data = await userService.login(req.body);
+    const data = await service.login(req.body);
 
     return res.status(HttpStatus.OK).json({ status: HttpStatus.OK, message: 'success', data });
   } catch (error) {
@@ -43,7 +43,8 @@ export const login = async (req, res, next) => {
  */
 export const getProfileInfo = async (req, res, next) => {
   try {
-    const data = await userService.getProfileInfo();
+    const userId = res.locals.tokenInfo.Id;
+    const data = await service.getProfileInfo(userId);
 
     return res.status(HttpStatus.OK).json({ status: HttpStatus.OK, message: 'success', data });
   } catch (error) {
@@ -60,7 +61,7 @@ export const getProfileInfo = async (req, res, next) => {
 export const setProfileInfo = async (req, res, next) => {
   try {
     const userId = res.locals.tokenInfo.Id;
-    const data = await userService.setProfileInfo(userId, req.body);
+    const data = await service.setProfileInfo(userId, req.body);
 
     return res.status(HttpStatus.OK).json({ status: HttpStatus.OK, message: 'success', data });
   } catch (error) {
@@ -77,7 +78,7 @@ export const setProfileInfo = async (req, res, next) => {
  */
 export const getTransactionDetails = async (req, res, next) => {
   try {
-    const data = await userService.getTransactionDetails(req.body);
+    const data = await service.getTransactionDetails(req.body);
 
     return res.status(HttpStatus.OK).json({ status: HttpStatus.OK, message: 'success', data });
   } catch (error) {
@@ -93,7 +94,7 @@ export const getTransactionDetails = async (req, res, next) => {
  */
 export const getAddressFromLatLng = async (req, res, next) => {
   try {
-    const data = await userService.getAddressFromLatLng(req.body);
+    const data = await service.getAddressFromLatLng(req.body);
 
     return res.status(HttpStatus.OK).json({ status: HttpStatus.OK, message: 'success', data });
   } catch (error) {

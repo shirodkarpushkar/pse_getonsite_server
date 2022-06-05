@@ -139,7 +139,7 @@ export const getAddressFromLatLng = async (info) => {
   try {
     const geocoder = NodeGeocoder({
       provider: 'google',
-      apiKey: config.googleMatrixAPIKey
+      apiKey: config.GOOGLE_MATRIX_API_KEY
     });
     let address = null;
 
