@@ -9,11 +9,11 @@ const config = process.env;
 
 const maxSize = 3000000;
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
+  destination: (req, file, cb) => {
     cb(null, path.join(config.CWD, '/public/machineImages/'));
   },
 
-  filename: function (req, file, cb) {
+  filename: (req, file, cb) => {
     const ext = file.originalname.substring(file.originalname.lastIndexOf('.'), file.originalname.length);
 
     // let ext = '.csv'
@@ -158,7 +158,7 @@ export const dashboardOverview = async (req, res, next) => {
 export const getBookings = async (req, res, next) => {
   try {
     const ownerId = res.locals.tokenInfo.Id;
-    const data = await service.getBookings(req.body, ownerId);
+    const data = await service.getBookings(req.query, ownerId);
 
     return res.status(HttpStatus.OK).json({ status: HttpStatus.OK, message: 'success', data });
   } catch (error) {

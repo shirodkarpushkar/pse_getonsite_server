@@ -134,7 +134,7 @@ const distanceCal = (o, d) => {
   });
 };
 
-export const getBookings = async (consumerId, info) => {
+export const getBookings = async ( info ,consumerId) => {
   try {
     const totalCountQ = await mysqlQuery(
       `SELECT BK.Id, BK.startDate, BK.endDate, EQ.serialNumber, BK.equipmentType, BK.transactionHash, BK.invoiceAmount 
@@ -166,7 +166,7 @@ export const getBookings = async (consumerId, info) => {
     throw Boom.badRequest(e);
   }
 };
-export const getInvoice = async (consumerId, info) => {
+export const getInvoice = async (info,consumerId) => {
   try {
     const totalCountQ = await mysqlQuery(
       `select INV.Id, INV.bookingId, INV.invoiceAmount, INV.transactionHash, 
@@ -203,7 +203,7 @@ export const getInvoice = async (consumerId, info) => {
     throw Boom.badRequest(e);
   }
 };
-export const createBooking = async (consumerId, info) => {
+export const createBooking = async (info,consumerId) => {
  
   try {
     let startDate = moment(new Date(info.startDate)).format('DD-MM-YYYY');

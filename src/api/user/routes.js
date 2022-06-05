@@ -11,7 +11,7 @@ const router = Router();
 router.get('/cities', userController.getCities);
 
 /**
- * GET /api/users/login.
+ * GET /api/login.
  */
 router.get('/login', userController.login);
 
@@ -23,7 +23,7 @@ router.get('/profile', auth.validateToken, userController.getProfileInfo);
 /**
  * POST /api/profile.
  */
-router.get('/profile', auth.validateToken, userController.setProfileInfo);
+router.post('/profile', auth.validateToken, userController.setProfileInfo);
 
 /**
  * GET /api/transaction_details.

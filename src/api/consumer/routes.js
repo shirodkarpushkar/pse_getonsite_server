@@ -1,10 +1,32 @@
 import { Router } from "express";
 import * as controller from './controller'
+import * as auth from '../../validators/auth'
 const router = Router();
 
 /**
- * GET /api/cities.
+ * POST /api/consumer/availability.
  */
-router.get('/cities', controller.getCities);
+router.post('/availability', controller.checkAvailability);
+
+/**
+ * GET /api/consumer/bookings.
+ */
+
+router.get('/bookings', auth.validateToken, controller.getBookings);
+
+/**
+ * POST /api/consumer/bookings.
+ */
+router.post('/bookings', auth.validateToken, controller.createBooking);
+
+/**
+ * GET /api/consumer/dashboard.
+ */
+router.get('/dashboard', auth.validateToken, controller.dashboardAPI);
+
+/**
+ * POST /api/consumer/invoices.
+ */
+router.post('/invoices', auth.validateToken, controller.getInvoice);
 
 export default router;
