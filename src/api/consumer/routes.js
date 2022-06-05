@@ -22,7 +22,7 @@ router.post('/bookings', auth.validateToken, controller.createBooking);
 /**
  * GET /api/consumer/dashboard.
  */
-router.get('/dashboard', auth.validateToken, controller.dashboardAPI);
+router.get('/dashboard', auth.validateToken, controller.dashboard);
 
 /**
  * POST /api/consumer/invoices.
