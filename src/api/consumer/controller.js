@@ -44,7 +44,7 @@ export const getBookings = async (req, res, next) => {
 export const getInvoice = async (req, res, next) => {
   try {
     const consumerId = res.locals.tokenInfo.Id;
-    const data = await service.getInvoice(req.body, consumerId);
+    const data = await service.getInvoice(req.query, consumerId);
 
     return res.status(HttpStatus.OK).json({ status: HttpStatus.OK, message: 'success', data });
   } catch (error) {

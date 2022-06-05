@@ -25,8 +25,8 @@ router.post('/bookings', auth.validateToken, controller.createBooking);
 router.get('/dashboard', auth.validateToken, controller.dashboard);
 
 /**
- * POST /api/consumer/invoices.
+ * GET /api/consumer/invoices.
  */
-router.post('/invoices', auth.validateToken, controller.getInvoice);
+router.get('/invoices', auth.validateToken, controller.getInvoice);
 
 export default router;
