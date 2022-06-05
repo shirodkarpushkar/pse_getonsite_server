@@ -42,7 +42,7 @@ router.get('/bookings', auth.validateToken, controller.getBookings);
 /**
  * GET /api/owner/invoices.
  */
-router.post('/invoices', auth.validateToken, controller.getInvoice);
+router.get('/invoices', auth.validateToken, controller.getInvoice);
 
 /**
  * GET /api/owner/machine_image.

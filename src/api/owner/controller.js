@@ -106,7 +106,7 @@ export const editMachine = async (req, res, next) => {
 export const machineList = async (req, res, next) => {
   try {
     const ownerId = res.locals.tokenInfo.Id;
-    const data = await service.machineList(req.body, ownerId);
+    const data = await service.machineList(req.query, ownerId);
 
     return res.status(HttpStatus.OK).json({ status: HttpStatus.OK, message: 'success', data });
   } catch (error) {
@@ -175,7 +175,7 @@ export const getBookings = async (req, res, next) => {
 export const getInvoice = async (req, res, next) => {
   try {
     const ownerId = res.locals.tokenInfo.Id;
-    const data = await service.getInvoice(ownerId, req.body);
+    const data = await service.getInvoice(ownerId, req.query);
 
     return res.status(HttpStatus.OK).json({ status: HttpStatus.OK, message: 'success', data });
   } catch (error) {
