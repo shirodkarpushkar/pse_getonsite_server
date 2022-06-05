@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import * as userController from './controller';
+import * as controller from './controller';
 import * as auth from '../../validators/auth';
 
 const router = Router();
@@ -8,31 +8,31 @@ const router = Router();
 /**
  * GET /api/cities.
  */
-router.get('/cities', userController.getCities);
+router.get('/cities', controller.getCities);
 
 /**
- * GET /api/login.
+ * POST /api/login.
  */
-router.get('/login', userController.login);
+router.post('/login', controller.login);
 
 /**
  * GET /api/profile.
  */
-router.get('/profile', auth.validateToken, userController.getProfileInfo);
+router.get('/profile', auth.validateToken, controller.getProfileInfo);
 
 /**
  * POST /api/profile.
  */
-router.post('/profile', auth.validateToken, userController.setProfileInfo);
+router.post('/profile', auth.validateToken, controller.setProfileInfo);
 
 /**
  * GET /api/transaction_details.
  */
-router.get('/transaction_details', auth.validateToken, userController.getTransactionDetails);
+router.get('/transaction_details', auth.validateToken, controller.getTransactionDetails);
 
 /**
  * GET /api/lat_long_address.
  */
-router.get('/lat_long_address', auth.validateToken, userController.getAddressFromLatLng);
+router.get('/lat_long_address', auth.validateToken, controller.getAddressFromLatLng);
 
 export default router;
