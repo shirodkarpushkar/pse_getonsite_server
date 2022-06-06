@@ -2,7 +2,7 @@ import { mysqlQuery } from '../../db';
 import moment from 'moment';
 import Boom from '@hapi/boom';
 import axios from 'axios';
-import logger from '../../utils/logger';
+// import logger from '../../utils/logger';
 // import HttpStatus from 'http-status-codes';
 
 const config = process.env;
@@ -53,43 +53,32 @@ export const checkAvailability = async (info) => {
 
       throw Boom.badRequest(`${getTypeQ[0].machineType} are currently  not available for booking`);
     }
-    let o1 = 0;
+    const o1 = 0;
 
-    while (o1 < checkAvailabilityR.length) {
-      const s = checkAvailabilityR[o1].lat + ',' + checkAvailabilityR[o1].lng;
-      const d = info.location.lat + ',' + info.location.lng;
-      let distance = 100;
-
-      try {
-        // eslint-disable-next-line no-await-in-loop
-        const dist = await distanceCal(s, d);
-
-        distance = Math.round(dist.distanceValue / 1000);
-      } catch (e) {
-        logger.error(e.message)
-        // o1.distanceinkm = null;
-      }
+    const distance = 100;
 
       // ----------HERE CALCUALTE TOTAL COSTING USING GOOLE DISTANCE API BASED UPOMN FOLLOWING =>
       // TOTAL NO OF DAYS * RATE PER DAY + TOTAL DISTANCE * PER KM RATE + TOTAL WEIGHT * RATE PER KG
       // eslint-disable-next-line no-await-in-loop
-      const daysCostQ = await mysqlQuery(
-        `select ratePerDay, ratePerKm, ratePerKg from equipmentrates where equipmentId = ?`,
-        [checkAvailabilityR[o1].equipmentType]
+      const daysCostArray = await Promise.all(
+        checkAvailabilityR.map((obj) =>
+          mysqlQuery(`select ratePerDay, ratePerKm, ratePerKg from equipmentrates where equipmentId = ?`, [
+            obj.equipmentType
+          ])
+        )
       );
-      const daysCost = info.totalDays * daysCostQ[0].ratePerDay;
 
-      if (distance === null) {
-        checkAvailabilityR[o1].totalCost = null;
-        checkAvailabilityR.splice(o1, 1);
-      } else {
-        const distanceCost = Number(distance) * daysCostQ[0].ratePerKm;
-        const transportCost = checkAvailabilityR[o1].equipmentWeight * 1000 * daysCostQ[0].ratePerKg;
+      checkAvailabilityR.map((obj, idx) => {
+        const rate = daysCostArray[idx][0].ratePerDay;
+        const rateKm = daysCostArray[idx][0].ratePerKm;
+        const rateKg = daysCostArray[idx][0].ratePerKg;
+        const daysCost = info.totalDays * rate;
 
-        checkAvailabilityR[o1].totalCost = Math.round(daysCost + distanceCost + transportCost);
-        o1++;
-      }
-    }
+        const distanceCost = Number(distance) * rateKm;
+        const transportCost = obj.equipmentWeight * 1000 * rateKg;
+
+        obj.totalCost = Math.round(daysCost + distanceCost + transportCost);
+      });
 
     if (checkAvailabilityR.length === 1) {
       return {
@@ -112,6 +101,7 @@ export const checkAvailability = async (info) => {
   }
 };
 
+// eslint-disable-next-line no-unused-vars
 const distanceCal = (o, d) => {
   return new Promise((resolve, reject) => {
     const distance = require('google-distance');
@@ -133,7 +123,7 @@ const distanceCal = (o, d) => {
   });
 };
 
-export const getBookings = async ( info ,consumerId) => {
+export const getBookings = async (info, consumerId) => {
   try {
     const totalCountQ = await mysqlQuery(
       `SELECT BK.Id, BK.startDate, BK.endDate, EQ.serialNumber, BK.equipmentType, BK.transactionHash, BK.invoiceAmount 
@@ -165,7 +155,7 @@ export const getBookings = async ( info ,consumerId) => {
     throw Boom.badRequest(e);
   }
 };
-export const getInvoice = async (info,consumerId) => {
+export const getInvoice = async (info, consumerId) => {
   try {
     const totalCountQ = await mysqlQuery(
       `select INV.Id, INV.bookingId, INV.invoiceAmount, INV.transactionHash, 
@@ -202,8 +192,7 @@ export const getInvoice = async (info,consumerId) => {
     throw Boom.badRequest(e);
   }
 };
-export const createBooking = async (info,consumerId) => {
- 
+export const createBooking = async (info, consumerId) => {
   try {
     let startDate = moment(new Date(info.startDate)).format('DD-MM-YYYY');
 
