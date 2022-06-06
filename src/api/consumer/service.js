@@ -53,32 +53,31 @@ export const checkAvailability = async (info) => {
 
       throw Boom.badRequest(`${getTypeQ[0].machineType} are currently  not available for booking`);
     }
-    const o1 = 0;
 
     const distance = 100;
 
-      // ----------HERE CALCUALTE TOTAL COSTING USING GOOLE DISTANCE API BASED UPOMN FOLLOWING =>
-      // TOTAL NO OF DAYS * RATE PER DAY + TOTAL DISTANCE * PER KM RATE + TOTAL WEIGHT * RATE PER KG
-      // eslint-disable-next-line no-await-in-loop
-      const daysCostArray = await Promise.all(
-        checkAvailabilityR.map((obj) =>
-          mysqlQuery(`select ratePerDay, ratePerKm, ratePerKg from equipmentrates where equipmentId = ?`, [
-            obj.equipmentType
-          ])
-        )
-      );
+    // ----------HERE CALCUALTE TOTAL COSTING USING GOOLE DISTANCE API BASED UPOMN FOLLOWING =>
+    // TOTAL NO OF DAYS * RATE PER DAY + TOTAL DISTANCE * PER KM RATE + TOTAL WEIGHT * RATE PER KG
+    // eslint-disable-next-line no-await-in-loop
+    const daysCostArray = await Promise.all(
+      checkAvailabilityR.map((obj) =>
+        mysqlQuery(`select ratePerDay, ratePerKm, ratePerKg from equipmentrates where equipmentId = ?`, [
+          obj.equipmentType
+        ])
+      )
+    );
 
-      checkAvailabilityR.map((obj, idx) => {
-        const rate = daysCostArray[idx][0].ratePerDay;
-        const rateKm = daysCostArray[idx][0].ratePerKm;
-        const rateKg = daysCostArray[idx][0].ratePerKg;
-        const daysCost = info.totalDays * rate;
+    checkAvailabilityR.map((obj, idx) => {
+      const rate = daysCostArray[idx][0].ratePerDay;
+      const rateKm = daysCostArray[idx][0].ratePerKm;
+      const rateKg = daysCostArray[idx][0].ratePerKg;
+      const daysCost = info.totalDays * rate;
 
-        const distanceCost = Number(distance) * rateKm;
-        const transportCost = obj.equipmentWeight * 1000 * rateKg;
+      const distanceCost = Number(distance) * rateKm;
+      const transportCost = obj.equipmentWeight * 1000 * rateKg;
 
-        obj.totalCost = Math.round(daysCost + distanceCost + transportCost);
-      });
+      obj.totalCost = Math.round(daysCost + distanceCost + transportCost);
+    });
 
     if (checkAvailabilityR.length === 1) {
       return {
@@ -271,17 +270,20 @@ export const dashboardAPI = async (consumerId) => {
         FROM tally t
        WHERE t.n <= DATEDIFF(LAST_DAY('${endDate}'), '${startDate}') + 1`);
 
-    for (const d1 of getAllDaysForMonth) {
-      // eslint-disable-next-line no-await-in-loop
-      const dataForMonth = await mysqlQuery(
-        `SELECT count(*) as count FROM booking BK 
+    const dataForMonthArray = await Promise.all(
+      getAllDaysForMonth.map((obj) =>
+        mysqlQuery(
+          `SELECT count(*) as count FROM booking BK 
       left join equipments EQ on BK.machineId = EQ.Id
       where BK.consumerNo = ? and date(BK.createdAt) = ?`,
-        [consumerId, d1.date]
-      );
+          [consumerId, obj.date]
+        )
+      )
+    );
 
-      d1.frequency = dataForMonth[0].count;
-    }
+    getAllDaysForMonth.map((el, idx) => {
+      el.frequency = dataForMonthArray[idx][0].count;
+    });
 
     return {
       upcomingBookings: getBookingsR,
