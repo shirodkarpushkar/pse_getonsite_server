@@ -194,13 +194,13 @@ export const getInvoice = async (info, consumerId) => {
 export const createBooking = async (info, consumerId) => {
   try {
     /* check consumer booking quota  */
-    const maxBookingsPerday = 2;
+    const maxBookingsPerday = 3;
     const currentTodaysBooking = await mysqlQuery(
       'SELECT count(*) as totalCount FROM booking where consumerNo = ? and DATE(createdAt) = CURDATE() ',
       [consumerId]
     );
 
-    if (currentTodaysBooking[0].totalCount > maxBookingsPerday) {
+    if (currentTodaysBooking[0].totalCount >= maxBookingsPerday) {
       throw Boom.badRequest('You have reached your booking quota for today. Please try again tommorow');
     }
 
