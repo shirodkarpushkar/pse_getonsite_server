@@ -1,5 +1,4 @@
 import Boom from '@hapi/boom';
-import axios from 'axios';
 import NodeGeocoder from 'node-geocoder';
 import { mysqlQuery } from '../../db';
 import { tokenEncrypt } from '../../utils';
@@ -130,21 +129,21 @@ export const getTransactionDetails = async (info) => {
 
     if (info.readType === 'Invoice') {
       try {
-        const blockChainRes = await axios.get(`${config.BLOCKCHAIN_URL}/getTxCI?TxID=${info.transactionHash}`);
+        const consumerQuery = await mysqlQuery(`select * from invoice where transactionHash = ?`, [
+          info.transactionHash
+        ]);
+        const consumerInvoice = consumerQuery[0];
+        const ownerQuery = await mysqlQuery(`select * from equipments where Id = ?`, [consumerInvoice.machineId]);
+        const equipment = ownerQuery[0];
+        const hashJson = JSON.parse(consumerInvoice.hashJson);
 
-        if (blockChainRes.data.StatusCode === 200) {
-          const consumerIdQ = await mysqlQuery(`select consumerNo, machineId from booking where Id = ?`, [
-            blockChainRes.data.Receipt.value.booking_id
-          ]);
-          const ownerIdQ = await mysqlQuery(`select ownerId from equipments where Id = ?`, [consumerIdQ[0].machineId]);
+        reciept.value.consumer_id = consumerInvoice.consumerNo;
+        reciept.value.owner_id = equipment.ownerId;
+        reciept.value.invoice_id = hashJson.invoiceId;
+        reciept.value.booking_id = hashJson.bookingId;
+        reciept.value.amount = hashJson.amount;
 
-          blockChainRes.data.Receipt.value.consumer_id = consumerIdQ[0].consumerNo;
-          blockChainRes.data.Receipt.value.owner_id = ownerIdQ[0].ownerId;
-
-          return blockChainRes.data.Receipt;
-        } else {
-          throw Boom.badRequest('Invalid transaction hash');
-        }
+        return reciept;
       } catch (error) {
         throw Boom.badRequest(error);
       }

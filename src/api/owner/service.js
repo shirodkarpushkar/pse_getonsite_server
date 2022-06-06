@@ -4,7 +4,6 @@ import HttpStatus from 'http-status-codes';
 import path from 'path';
 import fs from 'fs';
 import md5 from 'md5';
-import logger from '../../utils/logger';
 
 export const getMachineType = async () => {
   try {
