@@ -2,8 +2,8 @@ import Boom from '@hapi/boom';
 import axios from 'axios';
 import { mysqlQuery } from '../../db';
 import HttpStatus from 'http-status-codes';
-
-const config = process.env;
+import path from 'path';
+import fs from 'fs'
 
 export const getMachineType = async () => {
   try {
@@ -118,10 +118,9 @@ export const editMachine = async (info, ownerId) => {
 
       // -------------DELETE OLD IMAGE IF NEW IMAGE IS UPLOADED-------------------------------------------------------
       if (checkStatus[0].imageName !== info.imageName) {
-        const fs = require('fs');
 
         try {
-          fs.unlinkSync(config.CWD + '/public/machineImages/' + checkStatus[0].imageName);
+          fs.unlinkSync(path.join(__dirname, '../../../', `/public/machineImages/${checkStatus[0].imageName}`));
         } catch (error) {
           // eslint-disable-next-line no-console
           console.log(error);
@@ -156,10 +155,9 @@ export const editMachine = async (info, ownerId) => {
 
       // -------------DELETE OLD IMAGE IF NEW IMAGE IS UPLOADED-------------------------------------------------------
       if (checkStatus[0].imageName !== info.imageName) {
-        const fs = require('fs');
 
         try {
-          fs.unlinkSync(config.CWD + '/public/machineImages/' + checkStatus[0].imageName);
+          fs.unlinkSync(path.join(__dirname, '../../../', `/public/machineImages/${checkStatus[0].imageName}`));
         } catch (error) {
           // eslint-disable-next-line no-console
           console.log(error);
@@ -382,4 +380,3 @@ export const getInvoice = async (ownerId, info) => {
     throw Boom.badRequest(e);
   }
 };
-

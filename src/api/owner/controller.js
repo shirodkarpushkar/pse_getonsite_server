@@ -5,12 +5,11 @@ import multer from 'multer';
 import path from 'path';
 import * as service from './service';
 
-const config = process.env;
 
 const maxSize = 3000000;
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(config.CWD, '/public/machineImages/'));
+    cb(null, path.join(__dirname, '../../../', '/public/machineImages/'));
   },
 
   filename: (req, file, cb) => {
