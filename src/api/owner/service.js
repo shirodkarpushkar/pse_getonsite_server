@@ -1,9 +1,10 @@
 import Boom from '@hapi/boom';
-import axios from 'axios';
 import { mysqlQuery } from '../../db';
 import HttpStatus from 'http-status-codes';
 import path from 'path';
-import fs from 'fs'
+import fs from 'fs';
+import md5 from 'md5';
+import logger from '../../utils/logger';
 
 export const getMachineType = async () => {
   try {
@@ -81,22 +82,22 @@ export const editMachine = async (info, ownerId) => {
         [getBookingData[0].Id, getBookingData[0].invoiceAmount, getBookingData[0].machineId]
       );
       const invoiceId = insertInvoice.insertId;
-      let transactionHash = null;
 
-      try {
-        const amt = Number(getBookingData[0].invoiceAmount).toLocaleString();
-        const blockChainRes = await axios.post('http://localhost:8545/writeInvoice', {
-          InvoiceId: invoiceId.toString(), // `${invoiceId}`
-          BookingId: getBookingData[0].Id.toString(), // `${getBookingData[0].Id}`
-          Amount: `Kr ${amt}`
-        });
+      const amt = Number(getBookingData[0].invoiceAmount).toLocaleString();
 
-        transactionHash = blockChainRes.data.Hash;
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.log(error);
-      }
-      await mysqlQuery(`update invoice set transactionHash = ? where Id = ?`, [transactionHash, invoiceId]);
+      const blockChainRes = JSON.stringify({
+        invoiceId: invoiceId.toString(), // `${invoiceId}`
+        bookingId: getBookingData[0].Id.toString(), // `${getBookingData[0].Id}`
+        amount: `Kr ${amt}`
+      });
+
+      const transactionHash = md5(blockChainRes);
+
+
+      await mysqlQuery(`update invoice set ? where Id = ?`, [
+        { transactionHash: `0x${transactionHash}`, hashJson: blockChainRes },
+        invoiceId
+      ]);
 
       const updateMachineQ = `update equipments set equipmentName = ?,
         equipmentWeight = ?, edition = ?, serialNumber = ?, 
@@ -118,7 +119,6 @@ export const editMachine = async (info, ownerId) => {
 
       // -------------DELETE OLD IMAGE IF NEW IMAGE IS UPLOADED-------------------------------------------------------
       if (checkStatus[0].imageName !== info.imageName) {
-
         try {
           fs.unlinkSync(path.join(__dirname, '../../../', `/public/machineImages/${checkStatus[0].imageName}`));
         } catch (error) {
@@ -155,7 +155,6 @@ export const editMachine = async (info, ownerId) => {
 
       // -------------DELETE OLD IMAGE IF NEW IMAGE IS UPLOADED-------------------------------------------------------
       if (checkStatus[0].imageName !== info.imageName) {
-
         try {
           fs.unlinkSync(path.join(__dirname, '../../../', `/public/machineImages/${checkStatus[0].imageName}`));
         } catch (error) {
