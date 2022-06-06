@@ -66,5 +66,5 @@ export function genericErrorHandler(err, req, res, next) {
   logger.error(err.stack);
   const error = buildError(err);
 
-  res.status(error.code).json({ error });
+  res.status(error.status).json(error);
 }

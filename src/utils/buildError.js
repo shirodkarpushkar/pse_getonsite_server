@@ -10,7 +10,7 @@ function buildError(err) {
   // Validation errors
   if (err.isJoi) {
     return {
-      code: HttpStatus.BAD_REQUEST,
+      status: HttpStatus.BAD_REQUEST,
       message: HttpStatus.getStatusText(HttpStatus.BAD_REQUEST),
       details:
         err.details &&
@@ -26,14 +26,14 @@ function buildError(err) {
   // HTTP errors
   if (err.isBoom) {
     return {
-      code: err.output.statusCode,
+      status: err.output.statusCode,
       message: err.output.payload.message || err.output.payload.error
     };
   }
 
   // Return INTERNAL_SERVER_ERROR for all other cases
   return {
-    code: HttpStatus.INTERNAL_SERVER_ERROR,
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
     message: HttpStatus.getStatusText(HttpStatus.INTERNAL_SERVER_ERROR)
   };
 }
