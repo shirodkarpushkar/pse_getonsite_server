@@ -12,7 +12,7 @@ router.get('/dashboard', auth.validateToken, controller.dashboardOverview);
 /**
  * GET /api/owner/machine_types.
  */
-router.get('/machine_types',  controller.getMachineType);
+router.get('/machine_types', controller.getMachineType);
 
 /**
  * GET /api/owner/machine_status.
@@ -22,22 +22,22 @@ router.get('/machine_status', controller.getMachineStatus);
 /**
  * GET /api/owner/machines.
  */
-router.get('/machines',auth.validateToken ,controller.machineList);
+router.get('/machines', auth.validateToken, controller.machineList);
 
 /**
  * POST /api/owner/machines.
  */
-router.post('/machines', controller.addNewMachine);
+router.post('/machines', auth.validateToken, controller.addNewMachine);
 
 /**
  * PATCH /api/owner/machines.
  */
-router.patch('/machines', controller.editMachine);
+router.patch('/machines', auth.validateToken, controller.editMachine);
 
 /**
  * DELETE /api/owner/machines.
  */
-router.delete('/machines', controller.deleteMachine);
+router.delete('/machines', auth.validateToken, controller.deleteMachine);
 
 /**
  * GET /api/owner/bookings.
