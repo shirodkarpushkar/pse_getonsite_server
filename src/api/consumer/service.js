@@ -1,7 +1,7 @@
 import { mysqlQuery } from '../../db';
 import moment from 'moment';
 import Boom from '@hapi/boom';
-import axios from 'axios';
+import md5 from 'md5';
 // import logger from '../../utils/logger';
 // import HttpStatus from 'http-status-codes';
 
@@ -217,25 +217,33 @@ export const createBooking = async (info, consumerId) => {
       [info.machineId, startDate, endDate, getEqType[0].machineType, info.totalAmount, consumerId]
     );
     const bId = insertBookingQ.insertId;
-    // var transactionHash = "0xd48f8a896d8ff6241c1fe16937d6da6876daaafae916b83f3cfd5507f741feb7";
+    //  "0xd48f8a896d8ff6241c1fe16937d6da6876daaafae916b83f3cfd5507f741feb7";
     let transactionHash = null;
 
-    try {
-      const blockChainRes = await axios.post('http://localhost:8545/writeBooking', {
-        BookingId: bId.toString(), // `${bId}`
-        machineId: info.machineId.toString(), // `${info.machineId}`
-        startDate: moment(new Date(startDate)).format('MM-DD-YYYY').toString(),
-        endDate: moment(new Date(endDate)).format('MM-DD-YYYY').toString(),
-        machineLocation: getEqType[0].name.toString() // `${getEqType[0].name}`
-      });
+    /* Generate Hash */
 
-      transactionHash = blockChainRes.data.Hash;
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.log(error);
-    }
+    // const blockChainRes = await axios.post('http://localhost:8545/writeBooking', {
+    //   BookingId: bId.toString(),
+    //   machineId: info.machineId.toString(),
+    //   startDate: moment(new Date(startDate)).format('MM-DD-YYYY').toString(),
+    //   endDate: moment(new Date(endDate)).format('MM-DD-YYYY').toString(),
+    //   machineLocation: getEqType[0].name.toString()
+    // });
 
-    await mysqlQuery(`update booking set transactionHash = ? where Id = ?`, [transactionHash, bId]);
+    const blockChainRes = JSON.stringify({
+      bookingId: bId.toString(),
+      machineId: info.machineId.toString(),
+      startDate: moment(new Date(startDate)).format('MM-DD-YYYY').toString(),
+      endDate: moment(new Date(endDate)).format('MM-DD-YYYY').toString(),
+      machineLocation: getEqType[0].name.toString()
+    });
+
+    transactionHash = md5(blockChainRes);
+
+    await mysqlQuery(`update booking set ? where Id = ?`, [
+      { transactionHash: `0x${transactionHash}`, hashJson: blockChainRes },
+      bId
+    ]);
     // -------------update equipment status to occupied ie 2
     await mysqlQuery(`update equipments set status = 2 where Id = ?`, [info.machineId]);
     // send booking id in response

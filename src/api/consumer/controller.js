@@ -27,7 +27,8 @@ export const checkAvailability = async (req, res, next) => {
  */
 export const getBookings = async (req, res, next) => {
   try {
-    const data = await service.getBookings(req.query);
+    const consumerId = res.locals.tokenInfo.Id;
+    const data = await service.getBookings(req.query, consumerId);
 
     return res.status(HttpStatus.OK).json({ status: HttpStatus.OK, message: 'success', data });
   } catch (error) {
