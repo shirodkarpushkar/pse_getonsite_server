@@ -87,23 +87,42 @@ export const setProfileInfo = async (userId, info) => {
 
 export const getTransactionDetails = async (info) => {
   try {
+    const reciept = {
+      RPC_endpoint: 'localhost:8080',
+      txid: '0x25805ed1fa007e9e9a42b49eee4545533f538b0965cf289ef27afdcaa4808b5a',
+      Contract_address: '0xDd8aB405D0083cACD2563E8Edc162BE3BaEbB340',
+      From: '0x26ac5cD5fb34d468a25ab46fE774A3e8E81A4591',
+      Transaction_fees: 0,
+      Block_number: 1463,
+      timestamp: Date.now() / 1000,
+      Data: '0xc07c3da60000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001',
+      channel_id: '',
+      key: '2',
+      value: {},
+      is_delete: ''
+    };
+
     if (info.readType === 'Booking') {
       try {
-        const blockChainRes = await axios.get(`${config.BLOCKCHAIN_URL}/getTxCB?TxID=${info.transactionHash}`);
+        const consumerIdQ = await mysqlQuery(`select * from booking where transactionHash = ?`, [info.transactionHash]);
+        const ownerIdQ = await mysqlQuery(`select ownerId from equipments where Id = ?`, [consumerIdQ[0].machineId]);
+        const consumerBooking = consumerIdQ[0];
+        const consumerHashJson = JSON.parse(consumerBooking.hashJson);
 
-        if (blockChainRes.data.StatusCode === 200) {
-          const consumerIdQ = await mysqlQuery(`select consumerNo, machineId from booking where Id = ?`, [
-            blockChainRes.data.Receipt.value.booking_id
-          ]);
-          const ownerIdQ = await mysqlQuery(`select ownerId from equipments where Id = ?`, [consumerIdQ[0].machineId]);
+        const ownerBooking = ownerIdQ[0];
 
-          blockChainRes.data.Receipt.value.consumer_id = consumerIdQ[0].consumerNo;
-          blockChainRes.data.Receipt.value.owner_id = ownerIdQ[0].ownerId;
+        reciept.txid = info.transactionHash;
 
-          return blockChainRes.data.Receipt;
-        } else {
-          throw Boom.badRequest('Invalid transaction hash');
-        }
+        reciept.value.consumer_id = consumerBooking.consumerNo;
+        reciept.value.owner_id = ownerBooking.ownerId;
+
+        reciept.value.booking_id = consumerHashJson.bookingId;
+        reciept.value.machine_id = consumerHashJson.machineId;
+        reciept.value.start_date = consumerHashJson.startDate;
+        reciept.value.end_date = consumerHashJson.endDate;
+        reciept.value.machine_location = consumerHashJson.machineLocation;
+
+        return reciept;
       } catch (error) {
         throw Boom.badRequest(error);
       }

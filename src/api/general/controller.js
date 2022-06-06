@@ -78,7 +78,7 @@ export const setProfileInfo = async (req, res, next) => {
  */
 export const getTransactionDetails = async (req, res, next) => {
   try {
-    const data = await service.getTransactionDetails(req.body);
+    const data = await service.getTransactionDetails(req.query);
 
     return res.status(HttpStatus.OK).json({ status: HttpStatus.OK, message: 'success', data });
   } catch (error) {
