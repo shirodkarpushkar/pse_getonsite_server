@@ -92,7 +92,6 @@ export const editMachine = async (info, ownerId) => {
 
       const transactionHash = md5(blockChainRes);
 
-
       await mysqlQuery(`update invoice set ? where Id = ?`, [
         { transactionHash: `0x${transactionHash}`, hashJson: blockChainRes },
         invoiceId
@@ -257,12 +256,12 @@ export const dashboardOverview = async (ownerId) => {
       )
     );
 
-    getAllDaysForMonth.map((el, idx) => ({
+    const daysArr = getAllDaysForMonth.map((el, idx) => ({
       ...el,
       revenue: dataForMonth[idx][0].sum
     }));
 
-    finalObj.revenueGraph = getAllDaysForMonth;
+    finalObj.revenueGraph = daysArr;
 
     return finalObj;
   } catch (e) {
