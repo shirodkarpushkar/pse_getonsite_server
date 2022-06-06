@@ -194,7 +194,9 @@ export const getInvoice = async (info, consumerId) => {
 export const createBooking = async (info, consumerId) => {
   try {
     /* check consumer booking quota  */
-    const maxBookingsPerday = 3;
+    const userDetails = await mysqlQuery(`select * from user where Id = ?`, [consumerId]);
+    const consumer = userDetails[0];
+    const maxBookingsPerday = consumer.maxBookingsPerDay;
     const currentTodaysBooking = await mysqlQuery(
       'SELECT count(*) as totalCount FROM booking where consumerNo = ? and DATE(createdAt) = CURDATE() ',
       [consumerId]
