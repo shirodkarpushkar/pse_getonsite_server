@@ -2,6 +2,7 @@ import { mysqlQuery } from '../../db';
 import moment from 'moment';
 import Boom from '@hapi/boom';
 import axios from 'axios';
+import logger from '../../utils/logger';
 // import HttpStatus from 'http-status-codes';
 
 const config = process.env;
@@ -56,18 +57,16 @@ export const checkAvailability = async (info) => {
 
     while (o1 < checkAvailabilityR.length) {
       const s = checkAvailabilityR[o1].lat + ',' + checkAvailabilityR[o1].lng;
-      // var d = getDestCord[0].lat + "," + getDestCord[0].lng;
       const d = info.location.lat + ',' + info.location.lng;
-      let distance = null;
+      let distance = 100;
 
       try {
         // eslint-disable-next-line no-await-in-loop
         const dist = await distanceCal(s, d);
 
-        // distance = dist.distance.split(" ")[0]
         distance = Math.round(dist.distanceValue / 1000);
-        // o1.distanceinKm = dist.distance.split(" ")[0];
       } catch (e) {
+        logger.error(e.message)
         // o1.distanceinkm = null;
       }
 
