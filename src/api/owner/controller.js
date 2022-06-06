@@ -141,7 +141,7 @@ export const deleteMachine = async (req, res, next) => {
 export const dashboardOverview = async (req, res, next) => {
   try {
     const ownerId = res.locals.tokenInfo.Id;
-    const data = await service.dashboardOverview(req.body, ownerId);
+    const data = await service.dashboardOverview(ownerId);
 
     return res.status(HttpStatus.OK).json({ status: HttpStatus.OK, message: 'success', data });
   } catch (error) {

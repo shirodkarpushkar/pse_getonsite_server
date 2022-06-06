@@ -5,6 +5,11 @@ import * as auth from '../../validators/auth';
 const router = Router();
 
 /**
+ * GET /api/owner/dashboard.
+ */
+router.get('/dashboard', auth.validateToken, controller.dashboardOverview);
+
+/**
  * GET /api/owner/machine_types.
  */
 router.get('/machine_types',  controller.getMachineType);
