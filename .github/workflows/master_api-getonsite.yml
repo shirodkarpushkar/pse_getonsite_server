@@ -32,8 +32,8 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: api-getonsite
-          path: dist
-          
+          path: .
+
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
