@@ -27,7 +27,6 @@ jobs:
           npm install --global yarn
           yarn install
           yarn build 
-          yarn start 
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
