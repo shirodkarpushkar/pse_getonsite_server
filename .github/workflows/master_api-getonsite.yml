@@ -24,6 +24,7 @@ jobs:
 
       - name: Yarn install, build, and test
         run: |
+          npm install --global yarn
           yarn install
           yarn build 
           yarn start 
