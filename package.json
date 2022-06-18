@@ -1,7 +1,7 @@
 {
   "name": "express-api-es6-starter",
   "version": "1.0.0",
-  "description": "Express API ES6 Starter",
+  "description": "GetOnsite API ES6 Starter",
   "scripts": {
     "start": "node dist",
     "prestart": "yarn build",
