@@ -22,7 +22,7 @@ node_modules
 dist
 
 # # Public directory
-# public
+public
 
 # Dotenv configuration
 .env
