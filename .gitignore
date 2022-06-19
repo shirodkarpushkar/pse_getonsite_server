@@ -21,7 +21,7 @@ node_modules
 # Build directory
 dist
 
-# # Public directory
+# Public directory
 public
 
 # Dotenv configuration
